@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
         setupRecyclerView()
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         viewModel.messageList.observe(this){
-            messageListadapter.messages_list = it
+            messageListadapter.submitList(it)
         }
     }
 
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val item = messageListadapter.messages_list[viewHolder.adapterPosition]
+                val item = messageListadapter.currentList[viewHolder.adapterPosition]
                 viewModel.deleteMessageItem(item)
             }
 
