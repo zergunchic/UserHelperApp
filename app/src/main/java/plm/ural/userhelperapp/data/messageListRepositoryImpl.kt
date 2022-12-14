@@ -1,23 +1,35 @@
 package plm.ural.userhelperapp.data
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import plm.ural.userhelperapp.domain.MessageItem
 import plm.ural.userhelperapp.domain.MessagesRepository
+import kotlin.random.Random
 
-object messageListRepositoryImpl:MessagesRepository {
+object MessageListRepositoryImpl:MessagesRepository {
 
-    private val messageList = mutableListOf<MessageItem>()
-
+    private val messageList = sortedSetOf<MessageItem>({ o1,o2 -> o1.id.compareTo(o2.id)} )
+    private val messageListLD = MutableLiveData<List<MessageItem>>()
     private var autoIncrementId = 0
+
+    init{
+        for(i in 0 until 500){
+            val message = MessageItem("name $i","Hello, $i", Random.nextBoolean())
+            addMessage(message)
+        }
+    }
 
     override fun addMessage(message: MessageItem) {
         if(message.id == MessageItem.UNDEFINED_ID) {
             message.id = autoIncrementId++
         }
         messageList.add(message)
+        updateList()
     }
 
     override fun deleteMessage(message: MessageItem) {
         messageList.remove(message)
+        updateList()
     }
 
     override fun editMessage(messageItem: MessageItem) {
@@ -31,7 +43,11 @@ object messageListRepositoryImpl:MessagesRepository {
         throw RuntimeException("Element with id $messageId not found")
     }
 
-    override fun getMessageList(): List<MessageItem> {
-        return messageList.toList()
+    override fun getMessageList(): LiveData<List<MessageItem>> {
+        return messageListLD
+    }
+
+    private fun updateList(){
+        messageListLD.value = messageList.toList()
     }
 }

@@ -2,11 +2,84 @@ package plm.ural.userhelperapp.presentation
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import plm.ural.userhelperapp.R
+import plm.ural.userhelperapp.domain.MessageItem
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var viewModel: MainViewModel
+    private lateinit var messageListadapter: MessageListAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        setupRecyclerView()
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        viewModel.messageList.observe(this){
+            messageListadapter.messages_list = it
+        }
     }
+
+    private fun setupRecyclerView(){
+        val rvMessageList = findViewById<RecyclerView>(R.id.rv_message_list)
+        with(rvMessageList){
+            messageListadapter = MessageListAdapter()
+            adapter = messageListadapter
+            recycledViewPool.setMaxRecycledViews(0, MessageListAdapter.MAX_POOL_SIZE)
+            recycledViewPool.setMaxRecycledViews(1, MessageListAdapter.MAX_POOL_SIZE)
+        }
+        setupLongClickListener()
+
+        setupClickListener()
+
+        setupSwipeListener(rvMessageList)
+
+
+
+    }
+
+    private fun setupSwipeListener(rvMessageList: RecyclerView) {
+        val callback = object : ItemTouchHelper.SimpleCallback
+            (0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val item = messageListadapter.messages_list[viewHolder.adapterPosition]
+                viewModel.deleteMessageItem(item)
+            }
+
+        }
+        val itemTouchHelper = ItemTouchHelper(callback)
+        itemTouchHelper.attachToRecyclerView(rvMessageList)
+    }
+
+    private fun setupClickListener() {
+        messageListadapter.onMessageClickListener = {
+
+        }
+    }
+
+    private fun setupLongClickListener() {
+        messageListadapter.onMessageLongClickListener = {
+            viewModel.changeEnableState(it)
+        }
+
+        //Иной способ
+//      messageListadapter.onMessageLongClickListener = object: MessageListAdapter.OnMessageLongClickListener{
+//            override fun onMessageLongClick(messageItem: MessageItem) {
+//                viewModel.changeEnableState(messageItem)
+//            }
+//        }
+    }
+
+
 }

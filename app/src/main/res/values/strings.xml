@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">UserHelperApp</string>
+    <string name="add_btn">Add button</string>
 </resources>

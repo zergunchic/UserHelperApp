@@ -1,7 +1,9 @@
 package plm.ural.userhelperapp.domain
 
-class MessageList(private val messageRepository:MessagesRepository) {
-    fun getMessageList():List<MessageItem> {
+import androidx.lifecycle.LiveData
+
+class MessageListController(private val messageRepository:MessagesRepository) {
+    fun getMessageList(): LiveData<List<MessageItem>> {
         return messageRepository.getMessageList()
     }
 

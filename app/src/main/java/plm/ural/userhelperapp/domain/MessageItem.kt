@@ -3,7 +3,7 @@ package plm.ural.userhelperapp.domain
 data class MessageItem(
     val userName: String,
     val userMessage:String,
-    val enabled: Boolean,
+    var enabled: Boolean,
     var id: Int = UNDEFINED_ID
 ){
     companion object {
