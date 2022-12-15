@@ -23,8 +23,13 @@ class MessageItemViewModel: ViewModel() {
     val messageLiveData:LiveData<MessageItem>
         get() = _messageLiveData
 
+    private val _shouldCloseScreen = MutableLiveData<Unit>()
+    val shouldCloseScreen:LiveData<Unit>
+        get() = _shouldCloseScreen
+
     fun getMessageItem(MessageItemId: Int){
         val item = messageItemController.getMessageItem(MessageItemId)
+        _messageLiveData.value = item
     }
 
     fun addMessageItem(inputMessage:String?,inputName:String?){
@@ -34,16 +39,21 @@ class MessageItemViewModel: ViewModel() {
         if(fildesIsValid) {
             val message = MessageItem(nameIn, messageIn, true)
             messageItemController.addMessageItem(message)
+            _shouldCloseScreen.value = Unit
         }
     }
 
     fun editMessageItem(inputMessage:String?,inputName:String?){
         val nameIn = parseName(inputName)
         val messageIn = parseName(inputMessage)
-        val fildesIsValid = validateInput(nameIn,messageIn)
-        if(fildesIsValid) {
-            val message = MessageItem(nameIn, messageIn, true)
-            messageItemController.editMessageItem(message)
+        val fildsIsValid = validateInput(nameIn,messageIn)
+        if(fildsIsValid) {
+            _messageLiveData.value?.let {
+                val message = it.copy(userName = nameIn, userMessage = messageIn)
+                messageItemController.editMessageItem(message)
+                _shouldCloseScreen.value = Unit
+            }
+
         }
     }
 

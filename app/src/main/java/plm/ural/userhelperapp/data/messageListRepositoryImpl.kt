@@ -12,13 +12,6 @@ object MessageListRepositoryImpl:MessagesRepository {
     private val messageListLD = MutableLiveData<List<MessageItem>>()
     private var autoIncrementId = 0
 
-    init{
-        for(i in 0 until 500){
-            val message = MessageItem("name $i","Hello, $i", Random.nextBoolean())
-            addMessage(message)
-        }
-    }
-
     override fun addMessage(message: MessageItem) {
         if(message.id == MessageItem.UNDEFINED_ID) {
             message.id = autoIncrementId++
