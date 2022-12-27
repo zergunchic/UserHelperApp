@@ -8,34 +8,34 @@
     tools:context=".presentation.MessageItemActivity">
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/saveBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Сохранить"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName2" />
+        app:layout_constraintTop_toBottomOf="@+id/PersonName" />
 
     <EditText
         android:id="@+id/MessageFld"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
+        android:hint="Имя"
         android:inputType="textPersonName"
         android:minHeight="48dp"
-        android:text="Сообщение"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/editTextTextPersonName2"
+        android:id="@+id/PersonName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
+        android:hint="Сообщение"
         android:inputType="textPersonName"
         android:minHeight="48dp"
-        android:text="Имя"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/MessageFld" />
 </androidx.constraintlayout.widget.ConstraintLayout>

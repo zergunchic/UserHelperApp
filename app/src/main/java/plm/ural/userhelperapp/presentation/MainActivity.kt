@@ -1,12 +1,12 @@
 package plm.ural.userhelperapp.presentation
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import plm.ural.userhelperapp.R
-import plm.ural.userhelperapp.domain.MessageItem
 
 class MainActivity : AppCompatActivity() {
 
@@ -18,14 +18,20 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setupRecyclerView()
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        viewModel.messageList.observe(this){
+        viewModel.messageList.observe(this) {
             messageListadapter.submitList(it)
+        }
+
+        val buttonAddMessage = findViewById<FloatingActionButton>(R.id.floatingActionButton)
+        buttonAddMessage.setOnClickListener {
+            val intent = MessageItemActivity.newIntentAddMessage(this)
+            startActivity(intent)
         }
     }
 
-    private fun setupRecyclerView(){
+    private fun setupRecyclerView() {
         val rvMessageList = findViewById<RecyclerView>(R.id.rv_message_list)
-        with(rvMessageList){
+        with(rvMessageList) {
             messageListadapter = MessageListAdapter()
             adapter = messageListadapter
             recycledViewPool.setMaxRecycledViews(0, MessageListAdapter.MAX_POOL_SIZE)
@@ -36,7 +42,6 @@ class MainActivity : AppCompatActivity() {
         setupClickListener()
 
         setupSwipeListener(rvMessageList)
-
 
 
     }
@@ -64,7 +69,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupClickListener() {
         messageListadapter.onMessageClickListener = {
-
+            val intent = MessageItemActivity.newIntentEditMessage(this, it.id)
+            startActivity(intent)
         }
     }
 

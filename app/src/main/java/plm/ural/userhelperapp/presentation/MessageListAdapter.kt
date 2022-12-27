@@ -47,6 +47,7 @@ class MessageListAdapter: ListAdapter<MessageItem, MessageItemViewHolder>(Messag
 
         holder.view.setOnClickListener{
             onMessageClickListener?.invoke(messageItem)
+            messageItem.id
         }
     }
 //Определяет какой вид использовать для элементов списка
