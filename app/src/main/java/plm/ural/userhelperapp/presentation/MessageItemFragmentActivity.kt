@@ -19,7 +19,8 @@ class MessageItemFragmentActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_fmessage_item)
         parseIntent()
-        launchRightMode()
+        if(savedInstanceState == null)
+            launchRightMode()
     }
 
     private fun launchRightMode(){
@@ -30,7 +31,7 @@ class MessageItemFragmentActivity : AppCompatActivity() {
         }
 
         supportFragmentManager.beginTransaction()
-            .add(R.id.message_item_container, fragment)
+            .replace(R.id.message_item_container, fragment)
             .commit()
     }
 
