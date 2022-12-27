@@ -1,17 +1,20 @@
 package plm.ural.userhelperapp.presentation
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import plm.ural.userhelperapp.R
 import plm.ural.userhelperapp.presentation.MessageItemActivity.Companion.newIntentAddMessage
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), MessageItemFragment.OnEditingFinishedListener {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var messageListAdapter: MessageListAdapter
@@ -88,6 +91,11 @@ class MainActivity : AppCompatActivity() {
         }
         val itemTouchHelper = ItemTouchHelper(callback)
         itemTouchHelper.attachToRecyclerView(rvMessageList)
+    }
+
+    override fun onEditingFinished(){
+        Toast.makeText(this@MainActivity,"Success",Toast.LENGTH_SHORT)
+        supportFragmentManager.popBackStack()
     }
 
     private fun setupClickListener() {

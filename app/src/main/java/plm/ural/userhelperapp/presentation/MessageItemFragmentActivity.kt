@@ -8,10 +8,11 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import plm.ural.userhelperapp.R
 
-class MessageItemFragmentActivity : AppCompatActivity() {
+class MessageItemFragmentActivity : AppCompatActivity(), MessageItemFragment.OnEditingFinishedListener{
     private var messageItemId = -1
     private var screenMode = ""
 
@@ -68,5 +69,10 @@ class MessageItemFragmentActivity : AppCompatActivity() {
             intent.putExtra(EXTRA_MESSAGE_ITEM_ID, messageItemId)
             return intent
         }
+    }
+
+    override fun onEditingFinished() {
+        Toast.makeText(this,"Success", Toast.LENGTH_SHORT)
+        supportFragmentManager.popBackStack()
     }
 }

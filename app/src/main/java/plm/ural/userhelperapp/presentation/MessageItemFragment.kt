@@ -1,5 +1,6 @@
 package plm.ural.userhelperapp.presentation
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -15,12 +16,23 @@ import plm.ural.userhelperapp.R
 class MessageItemFragment(): Fragment() {
 
     private lateinit var viewModel:MessageItemViewModel
+    lateinit var onEditingFinishedListener: OnEditingFinishedListener
     private lateinit var messageFld: EditText
     private lateinit var nameFld: EditText
     private lateinit var saveBtn: Button
 
     private var screenMode: String = ""
     private var messageItemId: Int = -1
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if(context is OnEditingFinishedListener){
+            onEditingFinishedListener = context
+        } else {
+            throw RuntimeException("Activity must implement listener")
+        }
+
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -84,7 +96,7 @@ class MessageItemFragment(): Fragment() {
         }
 
         viewModel.shouldCloseScreen.observe(viewLifecycleOwner){
-            activity?.onBackPressed()
+            onEditingFinishedListener.onEditingFinished()
         }
     }
 
@@ -131,6 +143,10 @@ class MessageItemFragment(): Fragment() {
             MODE_EDIT -> launchEditMode()
             MODE_ADD -> launchAddMode()
         }
+    }
+
+    interface OnEditingFinishedListener{
+        fun onEditingFinished()
     }
 
     companion object{
