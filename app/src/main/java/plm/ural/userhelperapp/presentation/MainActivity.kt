@@ -7,11 +7,12 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import plm.ural.userhelperapp.R
+import plm.ural.userhelperapp.presentation.MessageItemActivity.Companion.newIntentAddMessage
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: MainViewModel
-    private lateinit var messageListadapter: MessageListAdapter
+    private lateinit var messageListAdapter: MessageListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,12 +20,13 @@ class MainActivity : AppCompatActivity() {
         setupRecyclerView()
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         viewModel.messageList.observe(this) {
-            messageListadapter.submitList(it)
+            messageListAdapter.submitList(it)
         }
 
         val buttonAddMessage = findViewById<FloatingActionButton>(R.id.floatingActionButton)
         buttonAddMessage.setOnClickListener {
-            val intent = MessageItemActivity.newIntentAddMessage(this)
+            //val intent = MessageItemActivity.newIntentAddMessage(this)
+            val intent = MessageItemFragmentActivity.newIntentAddMessage(this)
             startActivity(intent)
         }
     }
@@ -32,8 +34,8 @@ class MainActivity : AppCompatActivity() {
     private fun setupRecyclerView() {
         val rvMessageList = findViewById<RecyclerView>(R.id.rv_message_list)
         with(rvMessageList) {
-            messageListadapter = MessageListAdapter()
-            adapter = messageListadapter
+            messageListAdapter = MessageListAdapter()
+            adapter = messageListAdapter
             recycledViewPool.setMaxRecycledViews(0, MessageListAdapter.MAX_POOL_SIZE)
             recycledViewPool.setMaxRecycledViews(1, MessageListAdapter.MAX_POOL_SIZE)
         }
@@ -58,7 +60,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val item = messageListadapter.currentList[viewHolder.adapterPosition]
+                val item = messageListAdapter.currentList[viewHolder.adapterPosition]
                 viewModel.deleteMessageItem(item)
             }
 
@@ -68,14 +70,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupClickListener() {
-        messageListadapter.onMessageClickListener = {
-            val intent = MessageItemActivity.newIntentEditMessage(this, it.id)
+        messageListAdapter.onMessageClickListener = {
+            val intent = MessageItemFragmentActivity.newIntentEditMessage(this, it.id)
             startActivity(intent)
         }
     }
 
     private fun setupLongClickListener() {
-        messageListadapter.onMessageLongClickListener = {
+        messageListAdapter.onMessageLongClickListener = {
             viewModel.changeEnableState(it)
         }
 

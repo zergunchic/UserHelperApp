@@ -14,14 +14,15 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import plm.ural.userhelperapp.R
 
-class MessageItemFragment: Fragment() {
+class MessageItemFragment(): Fragment() {
 
     private lateinit var viewModel:MessageItemViewModel
     private lateinit var messageFld: EditText
     private lateinit var nameFld: EditText
     private lateinit var saveBtn: Button
-    private var messageItemId = -1
-    private var screenMode = ""
+
+    private var screenMode: String = ""
+    private var messageItemId: Int = -1
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,13 +32,15 @@ class MessageItemFragment: Fragment() {
         return inflater.inflate(R.layout.activity_message_item, container, false)
     }
 
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        parseParams()
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this)[MessageItemViewModel::class.java]
-        //setContentView(R.layout.activity_message_item)
-        parseParams()
         initViews(view)
+        launchRightMode()
         nameFld.addTextChangedListener(object: TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
@@ -65,7 +68,6 @@ class MessageItemFragment: Fragment() {
 
         })
         observeViewModel()
-        launchRightMode()
     }
 
     private fun observeViewModel(){
@@ -88,13 +90,6 @@ class MessageItemFragment: Fragment() {
         }
     }
 
-    private fun launchRightMode(){
-        when(screenMode){
-            MODE_EDIT -> launchEditMode()
-            MODE_ADD -> launchAddMode()
-        }
-    }
-
     private fun launchAddMode(){
         saveBtn.setOnClickListener{
             viewModel.addMessageItem(nameFld.text?.toString(),messageFld.text?.toString())
@@ -112,10 +107,19 @@ class MessageItemFragment: Fragment() {
     }
 
     private fun parseParams(){
-        if (screenMode != MODE_EDIT && screenMode != MODE_ADD)
-            throw RuntimeException("Unknown screen mode $screenMode")
-        if(screenMode == MODE_EDIT && messageItemId == -1)
+        val args = requireArguments()
+        if(!args.containsKey(EXTRA_SCREEN_MODE))
+            throw RuntimeException("param screen is absent")
+        val mode = args.getString(EXTRA_SCREEN_MODE)
+        if (mode != MODE_EDIT && mode != MODE_ADD)
+            throw RuntimeException("Unknown screen mode $mode")
+        screenMode = mode
+        if(screenMode == MODE_EDIT && !args.containsKey(
+                EXTRA_MESSAGE_ITEM_ID
+            ))
             throw RuntimeException("Param message id is not set")
+        if(screenMode == MODE_EDIT)
+            messageItemId = args.getInt(EXTRA_MESSAGE_ITEM_ID, -1)
     }
 
     private fun initViews(view:View){
@@ -124,23 +128,34 @@ class MessageItemFragment: Fragment() {
         saveBtn = view.findViewById(R.id.saveBtn)
     }
 
+    private fun launchRightMode(){
+        when(screenMode) {
+            MODE_EDIT -> launchEditMode()
+            MODE_ADD -> launchAddMode()
+        }
+    }
+
     companion object{
-        private const val EXTRA_SCREEN_MODE="extra_mode"
-        private const val EXTRA_MESSAGE_ITEM_ID="extra_message_item_id"
         private const val MODE_EDIT = "mode_edit"
         private const val MODE_ADD = "mode_add"
+        private const val EXTRA_SCREEN_MODE="extra_mode"
+        private const val EXTRA_MESSAGE_ITEM_ID="extra_message_item_id"
 
-        fun newIntentAddMessage(context: Context): Intent {
-            val intent = Intent(context, MessageItemActivity::class.java)
-            intent.putExtra(EXTRA_SCREEN_MODE, MODE_ADD)
-            return intent
+        fun newInstanceAddMessage():MessageItemFragment{
+            return MessageItemFragment().apply{
+                arguments = Bundle().apply{
+                    putString(EXTRA_SCREEN_MODE, MODE_ADD)
+                }
+            }
         }
 
-        fun newIntentEditMessage(context: Context, messageItemId:Int): Intent {
-            val intent = Intent(context, MessageItemActivity::class.java)
-            intent.putExtra(EXTRA_SCREEN_MODE, MODE_EDIT)
-            intent.putExtra(EXTRA_MESSAGE_ITEM_ID, messageItemId)
-            return intent
+        fun newInstanceEditMessage(messageItemId: Int):MessageItemFragment{
+            return MessageItemFragment().apply{
+                arguments = Bundle().apply {
+                    putString(EXTRA_SCREEN_MODE, MODE_EDIT)
+                    putInt(EXTRA_MESSAGE_ITEM_ID,messageItemId)
+                }
+            }
         }
     }
 }
