@@ -1,46 +1,46 @@
 package plm.ural.userhelperapp.data
 
+import android.app.Application
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import plm.ural.userhelperapp.domain.MessageItem
 import plm.ural.userhelperapp.domain.MessagesRepository
 import kotlin.random.Random
 
-object MessageListRepositoryImpl:MessagesRepository {
-
-    private val messageList = sortedSetOf<MessageItem>({ o1,o2 -> o1.id.compareTo(o2.id)} )
-    private val messageListLD = MutableLiveData<List<MessageItem>>()
-    private var autoIncrementId = 0
+class MessageListRepositoryImpl(
+    application: Application
+):MessagesRepository {
+    private val messageListDao = AppDatabase.getInstance(application).messageListDao()
+    private val mapper = MessageListMapper()
 
     override fun addMessage(message: MessageItem) {
-        if(message.id == MessageItem.UNDEFINED_ID) {
-            message.id = autoIncrementId++
-        }
-        messageList.add(message)
-        updateList()
+        messageListDao.addMessage(mapper.mapEntityToDbModel(message))
     }
 
     override fun deleteMessage(message: MessageItem) {
-        messageList.remove(message)
-        updateList()
+        messageListDao.deleteMessage(message.id)
     }
 
     override fun editMessage(messageItem: MessageItem) {
-        val oldMessage = getMessage(messageItem.id)
-        messageList.remove(oldMessage)
-        addMessage(messageItem)
+        messageListDao.addMessage(mapper.mapEntityToDbModel(messageItem))
     }
 
     override fun getMessage(messageId: Int): MessageItem {
-        return messageList.find { it.id == messageId } ?:
-        throw RuntimeException("Element with id $messageId not found")
+        val dbModel = messageListDao.getMessage(messageId)
+        return mapper.mapDBModelToEntity(dbModel)
     }
 
-    override fun getMessageList(): LiveData<List<MessageItem>> {
-        return messageListLD
-    }
-
-    private fun updateList(){
-        messageListLD.value = messageList.toList()
-    }
+//    override fun getMessageList(): LiveData<List<MessageItem>> =
+//        MediatorLiveData<List<MessageItem>>().apply{
+//            addSource(messageListDao.getMessageList()){
+//                value = mapper.mapListDbModelToListEntity(it)
+//            }
+//        }
+// Равно следующему методу
+    override fun getMessageList(): LiveData<List<MessageItem>> =
+        Transformations.map(messageListDao.getMessageList()){
+            mapper.mapListDbModelToListEntity(it)
+        }
 }
