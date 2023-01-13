@@ -14,7 +14,8 @@ abstract class AppDatabase:RoomDatabase() {
     companion object{
         private var INSTANCE: AppDatabase? = null
         private val LOCK = Any()
-        private const val DB_NAME = "message_items.db"
+        private const val DB_NAME = "message_item.db"
+
         fun getInstance(application:Application):AppDatabase{
             INSTANCE?.let{
                 return it
@@ -23,7 +24,9 @@ abstract class AppDatabase:RoomDatabase() {
                 INSTANCE?.let {
                     return it
                 }
-                val db = Room.databaseBuilder(application, AppDatabase::class.java,DB_NAME).build()
+                val db = Room.databaseBuilder(application, AppDatabase::class.java,DB_NAME)
+                    .allowMainThreadQueries()
+                    .build()
                 INSTANCE = db
                 return db
             }

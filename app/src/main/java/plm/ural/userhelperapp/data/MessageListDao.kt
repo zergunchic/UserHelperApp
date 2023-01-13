@@ -5,10 +5,10 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import plm.ural.userhelperapp.domain.MessageItem
 
 @Dao
 interface MessageListDao {
+    //Room получает объеты Live Data в отдельном потоке и не блокирует UI
     @Query("SELECT * FROM message_items")
     fun getMessageList(): LiveData<List<MessageItemDBModel>>
 
@@ -18,6 +18,6 @@ interface MessageListDao {
     @Query("DELETE FROM message_items WHERE id=:messageItemId")
     fun deleteMessage(messageItemId: Int)
 
-    @Query("SELECT * FROM message_items WHERE id:messageItemId LIMIT 1")
+    @Query("SELECT * FROM message_items WHERE id=:messageItemId LIMIT 1")
     fun getMessage(messageItemId: Int):MessageItemDBModel
 }

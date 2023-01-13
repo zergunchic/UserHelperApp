@@ -8,7 +8,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Button
 import android.widget.EditText
-import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import plm.ural.userhelperapp.R
 
@@ -24,7 +23,7 @@ class MessageItemActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this)[MessageItemViewModel::class.java]
+        viewModel = ViewModelProvider(this).get(MessageItemViewModel::class.java)
         setContentView(R.layout.activity_message_item)
         parseIntent()
         initViews()

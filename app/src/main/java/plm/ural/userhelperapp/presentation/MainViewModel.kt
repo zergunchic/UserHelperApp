@@ -1,15 +1,14 @@
 package plm.ural.userhelperapp.presentation
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import plm.ural.userhelperapp.data.MessageListRepositoryImpl
 import plm.ural.userhelperapp.domain.MessageItem
 import plm.ural.userhelperapp.domain.MessageListController
 
-class MainViewModel: ViewModel() {
+class MainViewModel(application: Application): AndroidViewModel(application) {
 
-    private val repository = MessageListRepositoryImpl
+    private val repository = MessageListRepositoryImpl(application)
     private val messageController = MessageListController(repository)
 
     val messageList = messageController.getMessageList()

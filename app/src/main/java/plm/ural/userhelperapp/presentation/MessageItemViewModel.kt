@@ -1,5 +1,7 @@
 package plm.ural.userhelperapp.presentation
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,9 +9,9 @@ import plm.ural.userhelperapp.data.MessageListRepositoryImpl
 import plm.ural.userhelperapp.domain.MessageItem
 import plm.ural.userhelperapp.domain.MessageItemController
 
-class MessageItemViewModel: ViewModel() {
+class MessageItemViewModel(application: Application): AndroidViewModel(application) {
 
-    private val repository = MessageListRepositoryImpl
+    private val repository = MessageListRepositoryImpl(application)
     private val messageItemController = MessageItemController(repository)
     private val _errorInputName = MutableLiveData<Boolean>()
     val errorInputName:LiveData<Boolean>
